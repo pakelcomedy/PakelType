@@ -39,15 +39,19 @@ function startTypingTest() {
 function handleTyping(event) {
     const typedChars = textDisplay.querySelectorAll('span');
 
-    if (event.key === 'Backspace' && charIndex > 0) {
-        typedChars[charIndex].classList.remove('cursor');
-        charIndex--;
-        const currentChar = typedChars[charIndex];
-        currentChar.classList.remove('correct', 'incorrect');
-        if (currentChar.classList.contains('incorrect')) {
-            totalErrors--;
+    if (event.key === 'Backspace') {
+        if (charIndex > 0) {
+            charIndex--;
+            const currentChar = typedChars[charIndex];
+            currentChar.classList.remove('correct', 'incorrect', 'cursor');
+
+            // Fix: Remove the incorrect class if it was set
+            if (currentChar.classList.contains('incorrect')) {
+                totalErrors--;
+            }
+
+            highlightCurrentChar();
         }
-        highlightCurrentChar();
     } else if (charIndex < textToType.length) {
         const currentChar = typedChars[charIndex];
         if (event.key === textToType[charIndex]) {
@@ -56,7 +60,6 @@ function handleTyping(event) {
             currentChar.classList.add('incorrect');
             totalErrors++;
         }
-        typedChars[charIndex].classList.remove('cursor');
         charIndex++;
         highlightCurrentChar();
     }
@@ -66,6 +69,9 @@ function handleTyping(event) {
 
 function highlightCurrentChar() {
     const typedChars = textDisplay.querySelectorAll('span');
+    // Remove cursor class from all characters
+    typedChars.forEach(char => char.classList.remove('cursor'));
+
     if (charIndex < typedChars.length) {
         typedChars[charIndex].classList.add('cursor');
     }
