@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PakelType</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>PakelType</h1>
+            <button id="theme-toggle">Toggle Theme</button>
+        </header>
+
+        <main>
+            <div id="typing-area">
+                <p id="text-display">Your typing text will appear here...</p>
+                <textarea id="user-input" placeholder="Start typing here..."></textarea>
+            </div>
+
+            <div id="stats">
+                <p>WPM: <span id="wpm">0</span></p>
+                <p>Accuracy: <span id="accuracy">100%</span></p>
+                <p>Errors: <span id="errors">0</span></p>
+            </div>
+        </main>
+
+        <footer>
+            <p>&copy; 2024 PakelType</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
