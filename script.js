@@ -2,6 +2,7 @@ const textDisplay = document.getElementById('text-display');
 const wpmDisplay = document.getElementById('wpm');
 const accuracyDisplay = document.getElementById('accuracy');
 const errorsDisplay = document.getElementById('errors');
+const resetButton = document.getElementById('reset-button');
 
 const wordList = [
     "apple", "orange", "banana", "grape", "pineapple",
@@ -14,6 +15,8 @@ let startTime;
 let totalErrors = 0;
 let textToType = '';
 let charIndex = 0;
+let isTypingTestActive = false;
+let waitingForSpace = false;
 
 function generateRandomText(wordCount = 10) {
     let randomText = '';
@@ -30,46 +33,63 @@ function startTypingTest() {
     startTime = new Date().getTime();
     totalErrors = 0;
     charIndex = 0;
+    waitingForSpace = false;
+    isTypingTestActive = true;
     highlightCurrentChar();
     document.addEventListener('keydown', handleTyping);
     updateStats();
 }
 
 function handleTyping(event) {
+    if (!isTypingTestActive) return;
+
     const typedChars = textDisplay.querySelectorAll('span');
 
-    // Check if the key is printable and part of the text
-    if (event.key.length === 1 && charIndex < textToType.length) {
-        const currentChar = typedChars[charIndex];
-        if (event.key === textToType[charIndex]) {
-            currentChar.classList.add('correct');
-        } else {
-            currentChar.classList.add('incorrect');
-            totalErrors++;
-        }
-        charIndex++;
-        highlightCurrentChar();
-    } else if (event.key === 'Backspace') {
+    // Handle Backspace
+    if (event.key === 'Backspace') {
         if (charIndex > 0) {
             charIndex--;
-            const currentChar = typedChars[charIndex];
-            currentChar.classList.remove('correct', 'incorrect', 'cursor');
-
-            // Fix: Remove the incorrect class if it was set
-            if (currentChar.classList.contains('incorrect')) {
-                totalErrors--;
-            }
-
+            const prevChar = typedChars[charIndex];
+            prevChar.classList.remove('correct', 'incorrect', 'cursor');
+            waitingForSpace = false; // Reset space waiting state on backspace
             highlightCurrentChar();
         }
+        return;
     }
 
+    // Correct character typed
+    if (!waitingForSpace && event.key === textToType[charIndex]) {
+        typedChars[charIndex].classList.add('correct');
+        charIndex++;
+        
+        // Check if at the end of a word
+        if (textToType[charIndex - 1] === ' ') {
+            waitingForSpace = false;
+        } else if (textToType[charIndex] === ' ') {
+            waitingForSpace = true;
+        }
+
+    // Incorrect character typed
+    } else if (!waitingForSpace && event.key.length === 1) {
+        typedChars[charIndex].classList.add('incorrect');
+        charIndex++;
+        totalErrors++;
+        
+        // If typing at the end of a word, stay in the space waiting state
+        if (textToType[charIndex] === ' ') {
+            waitingForSpace = true;
+        }
+    } else if (waitingForSpace && event.key === ' ') {
+        waitingForSpace = false;
+        charIndex++; // Move to the next character (which should be the next word)
+    }
+
+    highlightCurrentChar();
     updateStats();
 }
 
 function highlightCurrentChar() {
     const typedChars = textDisplay.querySelectorAll('span');
-    // Remove cursor class from all characters
     typedChars.forEach(char => char.classList.remove('cursor'));
 
     if (charIndex < typedChars.length) {
@@ -90,5 +110,16 @@ function updateStats() {
     errorsDisplay.textContent = totalErrors;
 }
 
-// Start the test on load
+function resetTypingTest() {
+    document.removeEventListener('keydown', handleTyping);
+    isTypingTestActive = false;
+    startTypingTest();
+}
+
+resetButton.addEventListener('mousedown', (event) => {
+    if (event.button === 0) { // Only respond to left mouse button
+        resetTypingTest();
+    }
+});
+
 startTypingTest();
