@@ -1,7 +1,7 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: var(--bg-color);
-    color: var(--text-color);
+    background-color: #35374B; /* Set background color */
+    color: rgba(255, 255, 255, 0.388);
 }
 
 .container {
@@ -24,12 +24,12 @@ body {
 
 .correct {
     color: white;
-    background-color: #35374B;
+    background-color: #35374B; /* Set background color */
 }
 
 .incorrect {
     color: red;
-    background-color: #35374B;
+    background-color: #35374B; /* Set background color */
 }
 
 .cursor {
@@ -41,19 +41,4 @@ body {
 @keyframes blink {
     from, to { background-color: rgba(173, 216, 230, 0.11); }
     50% { background-color: #35374B; }
-}
-
-#theme-toggle {
-    margin-top: 10px;
-    padding: 5px 10px;
-}
-
-:root {
-    --bg-color: #35374B;
-    --text-color: rgba(255, 255, 255, 0.388);
-}
-
-body.dark-mode {
-    --bg-color: black;
-    --text-color: rgba(255, 255, 255, 0.562);
 }

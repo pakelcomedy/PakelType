@@ -2,7 +2,6 @@ const textDisplay = document.getElementById('text-display');
 const wpmDisplay = document.getElementById('wpm');
 const accuracyDisplay = document.getElementById('accuracy');
 const errorsDisplay = document.getElementById('errors');
-const themeToggle = document.getElementById('theme-toggle');
 
 const wordList = [
     "apple", "orange", "banana", "grape", "pineapple",
@@ -39,7 +38,18 @@ function startTypingTest() {
 function handleTyping(event) {
     const typedChars = textDisplay.querySelectorAll('span');
 
-    if (event.key === 'Backspace') {
+    // Check if the key is printable and part of the text
+    if (event.key.length === 1 && charIndex < textToType.length) {
+        const currentChar = typedChars[charIndex];
+        if (event.key === textToType[charIndex]) {
+            currentChar.classList.add('correct');
+        } else {
+            currentChar.classList.add('incorrect');
+            totalErrors++;
+        }
+        charIndex++;
+        highlightCurrentChar();
+    } else if (event.key === 'Backspace') {
         if (charIndex > 0) {
             charIndex--;
             const currentChar = typedChars[charIndex];
@@ -52,16 +62,6 @@ function handleTyping(event) {
 
             highlightCurrentChar();
         }
-    } else if (charIndex < textToType.length) {
-        const currentChar = typedChars[charIndex];
-        if (event.key === textToType[charIndex]) {
-            currentChar.classList.add('correct');
-        } else {
-            currentChar.classList.add('incorrect');
-            totalErrors++;
-        }
-        charIndex++;
-        highlightCurrentChar();
     }
 
     updateStats();
@@ -89,12 +89,6 @@ function updateStats() {
     accuracyDisplay.textContent = `${accuracy}%`;
     errorsDisplay.textContent = totalErrors;
 }
-
-function toggleTheme() {
-    document.body.classList.toggle('dark-mode');
-}
-
-themeToggle.addEventListener('click', toggleTheme);
 
 // Start the test on load
 startTypingTest();
