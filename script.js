@@ -1,58 +1,93 @@
 const textDisplay = document.getElementById('text-display');
-const userInput = document.getElementById('user-input');
 const wpmDisplay = document.getElementById('wpm');
 const accuracyDisplay = document.getElementById('accuracy');
 const errorsDisplay = document.getElementById('errors');
 const themeToggle = document.getElementById('theme-toggle');
 
-const sampleTexts = [
-    "The quick brown fox jumps over the lazy dog.",
-    "A journey of a thousand miles begins with a single step.",
-    "To be or not to be, that is the question."
+const wordList = [
+    "apple", "orange", "banana", "grape", "pineapple",
+    "strawberry", "blueberry", "melon", "kiwi", "peach",
+    "cherry", "pear", "plum", "mango", "lemon",
+    "lime", "apricot", "coconut", "fig", "guava"
 ];
 
 let startTime;
 let totalErrors = 0;
+let textToType = '';
+let charIndex = 0;
+
+function generateRandomText(wordCount = 10) {
+    let randomText = '';
+    for (let i = 0; i < wordCount; i++) {
+        const randomIndex = Math.floor(Math.random() * wordList.length);
+        randomText += wordList[randomIndex] + ' ';
+    }
+    return randomText.trim();
+}
 
 function startTypingTest() {
-    const randomIndex = Math.floor(Math.random() * sampleTexts.length);
-    textDisplay.textContent = sampleTexts[randomIndex];
+    textToType = generateRandomText(15); // Generate a random text with 15 words
+    textDisplay.innerHTML = textToType.split('').map(char => `<span>${char}</span>`).join('');
     startTime = new Date().getTime();
     totalErrors = 0;
-    userInput.value = '';
+    charIndex = 0;
+    highlightCurrentChar();
+    document.addEventListener('keydown', handleTyping);
     updateStats();
 }
 
-function updateStats() {
-    const textEntered = userInput.value;
-    const textArray = textDisplay.textContent.split('');
-    const typedArray = textEntered.split('');
+function handleTyping(event) {
+    const typedChars = textDisplay.querySelectorAll('span');
 
-    let errors = 0;
-    typedArray.forEach((char, index) => {
-        if (char !== textArray[index]) {
-            errors++;
+    if (event.key === 'Backspace' && charIndex > 0) {
+        typedChars[charIndex].classList.remove('cursor');
+        charIndex--;
+        const currentChar = typedChars[charIndex];
+        currentChar.classList.remove('correct', 'incorrect');
+        if (currentChar.classList.contains('incorrect')) {
+            totalErrors--;
         }
-    });
+        highlightCurrentChar();
+    } else if (charIndex < textToType.length) {
+        const currentChar = typedChars[charIndex];
+        if (event.key === textToType[charIndex]) {
+            currentChar.classList.add('correct');
+        } else {
+            currentChar.classList.add('incorrect');
+            totalErrors++;
+        }
+        typedChars[charIndex].classList.remove('cursor');
+        charIndex++;
+        highlightCurrentChar();
+    }
 
+    updateStats();
+}
+
+function highlightCurrentChar() {
+    const typedChars = textDisplay.querySelectorAll('span');
+    if (charIndex < typedChars.length) {
+        typedChars[charIndex].classList.add('cursor');
+    }
+}
+
+function updateStats() {
+    const correctChars = document.querySelectorAll('.correct').length;
     const elapsedTime = (new Date().getTime() - startTime) / 1000 / 60; // minutes
-    const wordsTyped = textEntered.split(' ').length;
+    const wordsTyped = correctChars / 5; // Approximation of words based on 5 chars per word
     const wpm = Math.round(wordsTyped / elapsedTime);
 
-    const accuracy = Math.max(0, Math.round((1 - errors / typedArray.length) * 100));
+    const accuracy = Math.max(0, Math.round((1 - totalErrors / (correctChars + totalErrors)) * 100));
 
     wpmDisplay.textContent = wpm;
     accuracyDisplay.textContent = `${accuracy}%`;
-    errorsDisplay.textContent = errors;
-
-    totalErrors = errors;
+    errorsDisplay.textContent = totalErrors;
 }
 
 function toggleTheme() {
     document.body.classList.toggle('dark-mode');
 }
 
-userInput.addEventListener('input', updateStats);
 themeToggle.addEventListener('click', toggleTheme);
 
 // Start the test on load
