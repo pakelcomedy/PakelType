@@ -18,17 +18,29 @@ let charIndex = 0;
 let isTypingTestActive = false;
 let waitingForSpace = false;
 
-function generateRandomText(wordCount = 22) {
+function generateRandomText(wordCount = 20) {
+    const wordsPerLine = 7; // Number of words per line
     let randomText = '';
+    let lineLength = 0;
+
     for (let i = 0; i < wordCount; i++) {
         const randomIndex = Math.floor(Math.random() * wordList.length);
         randomText += wordList[randomIndex] + ' ';
+        lineLength++;
+
+        // Add a newline character after the specified number of words
+        if (lineLength === wordsPerLine) {
+            randomText = randomText.trimEnd(); // Remove trailing space
+            randomText += '\n'; // Add newline character
+            lineLength = 0;
+        }
     }
-    return randomText.trim();
+
+    return randomText.trim(); // Remove any trailing spaces or newline at the end
 }
 
 function startTypingTest() {
-    textToType = generateRandomText(); // Generate text with a suitable number of words
+    textToType = generateRandomText();
     textDisplay.innerHTML = textToType.split('').map(char => `<span>${char}</span>`).join('');
     startTime = new Date().getTime();
     totalErrors = 0;
@@ -45,43 +57,36 @@ function handleTyping(event) {
 
     const typedChars = textDisplay.querySelectorAll('span');
 
-    // Handle Backspace
     if (event.key === 'Backspace') {
         if (charIndex > 0) {
             charIndex--;
             const prevChar = typedChars[charIndex];
             prevChar.classList.remove('correct', 'incorrect', 'cursor');
-            waitingForSpace = false; // Reset space waiting state on backspace
+            waitingForSpace = false;
             highlightCurrentChar();
         }
         return;
     }
 
-    // Correct character typed
     if (!waitingForSpace && event.key === textToType[charIndex]) {
         typedChars[charIndex].classList.add('correct');
         charIndex++;
-        
-        // Check if at the end of a word
+
         if (textToType[charIndex - 1] === ' ') {
             waitingForSpace = false;
         } else if (textToType[charIndex] === ' ') {
             waitingForSpace = true;
         }
-
-    // Incorrect character typed
     } else if (!waitingForSpace && event.key.length === 1) {
         typedChars[charIndex].classList.add('incorrect');
         charIndex++;
         totalErrors++;
-        
-        // If typing at the end of a word, stay in the space waiting state
         if (textToType[charIndex] === ' ') {
             waitingForSpace = true;
         }
     } else if (waitingForSpace && event.key === ' ') {
         waitingForSpace = false;
-        charIndex++; // Move to the next character (which should be the next word)
+        charIndex++;
     }
 
     highlightCurrentChar();
@@ -99,8 +104,8 @@ function highlightCurrentChar() {
 
 function updateStats() {
     const correctChars = document.querySelectorAll('.correct').length;
-    const elapsedTime = (new Date().getTime() - startTime) / 1000 / 60; // minutes
-    const wordsTyped = correctChars / 5; // Approximation of words based on 5 chars per word
+    const elapsedTime = (new Date().getTime() - startTime) / 1000 / 60;
+    const wordsTyped = correctChars / 5;
     const wpm = Math.round(wordsTyped / elapsedTime);
 
     const accuracy = Math.max(0, Math.round((1 - totalErrors / (correctChars + totalErrors)) * 100));
@@ -117,7 +122,7 @@ function resetTypingTest() {
 }
 
 resetButton.addEventListener('mousedown', (event) => {
-    if (event.button === 0) { // Only respond to left mouse button
+    if (event.button === 0) {
         resetTypingTest();
     }
 });

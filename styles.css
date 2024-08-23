@@ -26,11 +26,11 @@ header h1 {
 }
 
 .pakel {
-    color: #c8ff007b; /* Greenish color */
+    color: #c8ff00a0; /* Greenish color */
 }
 
 .type {
-    color: #a0fffa82; /* Light blue color */
+    color: #a0fffa9e; /* Light blue color */
 }
 
 #typing-area {
@@ -41,10 +41,10 @@ header h1 {
 }
 
 #text-display {
-    font-size: 24px;
+    font-size: 25px;
     font-weight: bold;
     letter-spacing: 1.5px;
-    white-space: pre-wrap;
+    white-space: pre-wrap; /* Preserve new lines */
     text-align: left;
     margin-bottom: 10px;
     display: block;
@@ -52,8 +52,8 @@ header h1 {
     max-width: 800px;
     word-wrap: break-word;
     line-height: 1.5;
-    height: 150px;
-    overflow: hidden;
+    height: auto; /* Adjust height to fit content */
+    overflow: hidden; /* Hide overflow content */
     position: relative;
 }
 
