@@ -25,11 +25,19 @@ header h1 {
     font-weight: bold;
 }
 
+.pakel {
+    color: #c8ff007b; /* Greenish color */
+}
+
+.type {
+    color: #a0fffa82; /* Light blue color */
+}
+
 #typing-area {
     margin: 20px 0;
     display: flex;
     flex-direction: column;
-    align-items: center; /* Center items horizontally */
+    align-items: center;
 }
 
 #text-display {
@@ -37,15 +45,15 @@ header h1 {
     font-weight: bold;
     letter-spacing: 1.5px;
     white-space: pre-wrap;
-    text-align: left; /* Left-align text inside the paragraph */
-    margin-bottom: 10px; /* Space between text and button */
-    display: block; /* Block-level formatting */
-    width: 100%; /* Full width for proper alignment */
-    max-width: 800px; /* Limit width for better readability */
-    word-wrap: break-word; /* Wrap long words */
-    line-height: 1.5; /* Line height for better readability */
-    height: 150px; /* Set height to fit three lines */
-    overflow: hidden; /* Hide overflow */
+    text-align: left;
+    margin-bottom: 10px;
+    display: block;
+    width: 100%;
+    max-width: 800px;
+    word-wrap: break-word;
+    line-height: 1.5;
+    height: 150px;
+    overflow: hidden;
     position: relative;
 }
 
@@ -66,12 +74,12 @@ header h1 {
 
 .correct {
     color: white;
-    background-color: #35374B; /* Set background color */
+    background-color: #35374B;
 }
 
 .incorrect {
     color: red;
-    background-color: #35374B; /* Set background color */
+    background-color: #35374B;
 }
 
 .cursor {
