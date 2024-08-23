@@ -18,7 +18,7 @@ let charIndex = 0;
 let isTypingTestActive = false;
 let waitingForSpace = false;
 
-function generateRandomText(wordCount = 10) {
+function generateRandomText(wordCount = 22) {
     let randomText = '';
     for (let i = 0; i < wordCount; i++) {
         const randomIndex = Math.floor(Math.random() * wordList.length);
@@ -28,7 +28,7 @@ function generateRandomText(wordCount = 10) {
 }
 
 function startTypingTest() {
-    textToType = generateRandomText(15); // Generate a random text with 15 words
+    textToType = generateRandomText(); // Generate text with a suitable number of words
     textDisplay.innerHTML = textToType.split('').map(char => `<span>${char}</span>`).join('');
     startTime = new Date().getTime();
     totalErrors = 0;

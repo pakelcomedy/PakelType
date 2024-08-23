@@ -37,7 +37,16 @@ header h1 {
     font-weight: bold;
     letter-spacing: 1.5px;
     white-space: pre-wrap;
+    text-align: left; /* Left-align text inside the paragraph */
     margin-bottom: 10px; /* Space between text and button */
+    display: block; /* Block-level formatting */
+    width: 100%; /* Full width for proper alignment */
+    max-width: 800px; /* Limit width for better readability */
+    word-wrap: break-word; /* Wrap long words */
+    line-height: 1.5; /* Line height for better readability */
+    height: 150px; /* Set height to fit three lines */
+    overflow: hidden; /* Hide overflow */
+    position: relative;
 }
 
 #reset-button {
