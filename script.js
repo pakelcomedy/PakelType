@@ -20,23 +20,43 @@ let waitingForSpace = false;
 
 function generateRandomText(wordCount = 20) {
     const wordsPerLine = 7; // Number of words per line
+    const maxLines = 3; // Maximum number of lines
     let randomText = '';
     let lineLength = 0;
+    let wordsInCurrentLine = 0;
+    let currentLine = 0;
 
     for (let i = 0; i < wordCount; i++) {
         const randomIndex = Math.floor(Math.random() * wordList.length);
-        randomText += wordList[randomIndex] + ' ';
-        lineLength++;
+        const word = wordList[randomIndex];
 
-        // Add a newline character after the specified number of words
-        if (lineLength === wordsPerLine) {
+        // Check if adding the next word exceeds line length or line word limit
+        if (wordsInCurrentLine >= wordsPerLine || lineLength + word.length + 1 > 50) {
+            // Add a newline if the current line exceeds limits
             randomText = randomText.trimEnd(); // Remove trailing space
             randomText += '\n'; // Add newline character
             lineLength = 0;
+            wordsInCurrentLine = 0;
+            currentLine++;
+
+            // Stop adding more lines if maximum lines reached
+            if (currentLine >= maxLines) {
+                break;
+            }
         }
+
+        randomText += word + ' ';
+        lineLength += word.length + 1; // Add space
+        wordsInCurrentLine++;
     }
 
-    return randomText.trim(); // Remove any trailing spaces or newline at the end
+    // Add padding if fewer lines than maxLines
+    while (currentLine < maxLines) {
+        randomText += '\n'; // Add empty lines if needed
+        currentLine++;
+    }
+
+    return randomText.trim(); // Remove any trailing spaces or newlines at the end
 }
 
 function startTypingTest() {
