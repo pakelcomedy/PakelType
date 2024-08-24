@@ -17,10 +17,11 @@ let textToType = '';
 let charIndex = 0;
 let isTypingTestActive = false;
 let spacePressed = false;
+let charsTypedInCurrentWord = 0; // Track characters typed in the current word
 
 function generateRandomText(wordCount = 20) {
-    const wordsPerLine = 7; // Number of words per line
-    const maxLines = 3; // Maximum number of lines
+    const wordsPerLine = 7;
+    const maxLines = 3;
     let randomText = '';
     let lineLength = 0;
     let wordsInCurrentLine = 0;
@@ -62,6 +63,7 @@ function startTypingTest() {
     totalErrors = 0;
     charIndex = 0;
     spacePressed = false;
+    charsTypedInCurrentWord = 0;
     isTypingTestActive = true;
     highlightCurrentChar();
     document.addEventListener('keydown', handleTyping);
@@ -79,15 +81,21 @@ function handleTyping(event) {
             const prevChar = typedChars[charIndex];
             prevChar.classList.remove('correct', 'incorrect', 'cursor');
             spacePressed = false;
+
+            if (textToType[charIndex] !== ' ') {
+                charsTypedInCurrentWord = Math.max(0, charsTypedInCurrentWord - 1);
+            }
+
             highlightCurrentChar();
         }
         return;
     }
 
     if (event.key === ' ') {
-        if (!spacePressed) {
+        if (!spacePressed && charsTypedInCurrentWord > 0) {
             skipToNextWord();
             spacePressed = true;
+            charsTypedInCurrentWord = 0; // Reset for the next word
         }
         return;
     }
@@ -98,11 +106,13 @@ function handleTyping(event) {
             typedChars[charIndex].classList.add('correct');
             spacePressed = false;
             charIndex++;
+            charsTypedInCurrentWord++;
         } else if (event.key.length === 1) { // Handle only single character keys
             typedChars[charIndex].classList.add('incorrect');
             totalErrors++;
             spacePressed = false;
             charIndex++;
+            charsTypedInCurrentWord++;
         }
     }
 
