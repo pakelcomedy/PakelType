@@ -16,7 +16,7 @@ let totalErrors = 0;
 let textToType = '';
 let charIndex = 0;
 let isTypingTestActive = false;
-let spacePressed = false; // New variable to track space press
+let spacePressed = false;
 
 function generateRandomText(wordCount = 20) {
     const wordsPerLine = 7; // Number of words per line
@@ -30,33 +30,29 @@ function generateRandomText(wordCount = 20) {
         const randomIndex = Math.floor(Math.random() * wordList.length);
         const word = wordList[randomIndex];
 
-        // Check if adding the next word exceeds line length or line word limit
         if (wordsInCurrentLine >= wordsPerLine || lineLength + word.length + 1 > 50) {
-            // Add a newline if the current line exceeds limits
-            randomText = randomText.trimEnd(); // Remove trailing space
-            randomText += '\n'; // Add newline character
+            randomText = randomText.trimEnd();
+            randomText += '\n';
             lineLength = 0;
             wordsInCurrentLine = 0;
             currentLine++;
 
-            // Stop adding more lines if maximum lines reached
             if (currentLine >= maxLines) {
                 break;
             }
         }
 
         randomText += word + ' ';
-        lineLength += word.length + 1; // Add space
+        lineLength += word.length + 1;
         wordsInCurrentLine++;
     }
 
-    // Add padding if fewer lines than maxLines
     while (currentLine < maxLines) {
-        randomText += '\n'; // Add empty lines if needed
+        randomText += '\n';
         currentLine++;
     }
 
-    return randomText.trim(); // Remove any trailing spaces or newlines at the end
+    return randomText.trim();
 }
 
 function startTypingTest() {
@@ -65,7 +61,7 @@ function startTypingTest() {
     startTime = new Date().getTime();
     totalErrors = 0;
     charIndex = 0;
-    spacePressed = false; // Reset space press tracker
+    spacePressed = false;
     isTypingTestActive = true;
     highlightCurrentChar();
     document.addEventListener('keydown', handleTyping);
@@ -82,30 +78,34 @@ function handleTyping(event) {
             charIndex--;
             const prevChar = typedChars[charIndex];
             prevChar.classList.remove('correct', 'incorrect', 'cursor');
-            spacePressed = false; // Allow space again after backspace
+            spacePressed = false;
             highlightCurrentChar();
         }
         return;
     }
 
     if (event.key === ' ') {
-        if (!spacePressed) { // Only skip if space wasn't pressed previously
+        if (!spacePressed) {
             skipToNextWord();
-            spacePressed = true; // Set flag to prevent spamming
+            spacePressed = true;
         }
         return;
     }
 
-    if (event.key === textToType[charIndex]) {
-        typedChars[charIndex].classList.add('correct');
-        spacePressed = false; // Reset space press tracker on correct input
-    } else if (event.key.length === 1) { // Handle only single character keys
-        typedChars[charIndex].classList.add('incorrect');
-        totalErrors++;
-        spacePressed = false; // Reset space press tracker on incorrect input
+    // Prevent typing if the current character is a space or end of text
+    if (charIndex < typedChars.length && textToType[charIndex] !== ' ') {
+        if (event.key === textToType[charIndex]) {
+            typedChars[charIndex].classList.add('correct');
+            spacePressed = false;
+            charIndex++;
+        } else if (event.key.length === 1) { // Handle only single character keys
+            typedChars[charIndex].classList.add('incorrect');
+            totalErrors++;
+            spacePressed = false;
+            charIndex++;
+        }
     }
 
-    charIndex++;
     highlightCurrentChar();
     updateStats();
 }
@@ -113,12 +113,10 @@ function handleTyping(event) {
 function skipToNextWord() {
     const typedChars = textDisplay.querySelectorAll('span');
 
-    // Move the index forward until the next space or end of the text
     while (charIndex < typedChars.length && textToType[charIndex] !== ' ') {
         charIndex++;
     }
 
-    // Move one more index to skip the space itself
     if (charIndex < typedChars.length) {
         charIndex++;
     }
