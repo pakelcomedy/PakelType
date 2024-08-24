@@ -16,7 +16,7 @@ let totalErrors = 0;
 let textToType = '';
 let charIndex = 0;
 let isTypingTestActive = false;
-let waitingForSpace = false;
+let spacePressed = false; // New variable to track space press
 
 function generateRandomText(wordCount = 20) {
     const wordsPerLine = 7; // Number of words per line
@@ -65,7 +65,7 @@ function startTypingTest() {
     startTime = new Date().getTime();
     totalErrors = 0;
     charIndex = 0;
-    waitingForSpace = false;
+    spacePressed = false; // Reset space press tracker
     isTypingTestActive = true;
     highlightCurrentChar();
     document.addEventListener('keydown', handleTyping);
@@ -82,35 +82,48 @@ function handleTyping(event) {
             charIndex--;
             const prevChar = typedChars[charIndex];
             prevChar.classList.remove('correct', 'incorrect', 'cursor');
-            waitingForSpace = false;
+            spacePressed = false; // Allow space again after backspace
             highlightCurrentChar();
         }
         return;
     }
 
-    if (!waitingForSpace && event.key === textToType[charIndex]) {
-        typedChars[charIndex].classList.add('correct');
-        charIndex++;
+    if (event.key === ' ') {
+        if (!spacePressed) { // Only skip if space wasn't pressed previously
+            skipToNextWord();
+            spacePressed = true; // Set flag to prevent spamming
+        }
+        return;
+    }
 
-        if (textToType[charIndex - 1] === ' ') {
-            waitingForSpace = false;
-        } else if (textToType[charIndex] === ' ') {
-            waitingForSpace = true;
-        }
-    } else if (!waitingForSpace && event.key.length === 1) {
+    if (event.key === textToType[charIndex]) {
+        typedChars[charIndex].classList.add('correct');
+        spacePressed = false; // Reset space press tracker on correct input
+    } else if (event.key.length === 1) { // Handle only single character keys
         typedChars[charIndex].classList.add('incorrect');
-        charIndex++;
         totalErrors++;
-        if (textToType[charIndex] === ' ') {
-            waitingForSpace = true;
-        }
-    } else if (waitingForSpace && event.key === ' ') {
-        waitingForSpace = false;
+        spacePressed = false; // Reset space press tracker on incorrect input
+    }
+
+    charIndex++;
+    highlightCurrentChar();
+    updateStats();
+}
+
+function skipToNextWord() {
+    const typedChars = textDisplay.querySelectorAll('span');
+
+    // Move the index forward until the next space or end of the text
+    while (charIndex < typedChars.length && textToType[charIndex] !== ' ') {
+        charIndex++;
+    }
+
+    // Move one more index to skip the space itself
+    if (charIndex < typedChars.length) {
         charIndex++;
     }
 
     highlightCurrentChar();
-    updateStats();
 }
 
 function highlightCurrentChar() {
